@@ -55,4 +55,6 @@ sweetSchema.methods.getFormattedPrice = function () {
   return `₹${this.price}`;
 };
 
+
+
 module.exports = mongoose.model("Sweet", sweetSchema);

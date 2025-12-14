@@ -17,6 +17,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // enable auth routes
 app.use('/api/auth', require('./routes/auth'));
+// enable sweet routes
+app.use('/api/Sweet', require('./routes/Sweet'));
+
 
 // Serve uploaded files
 app.use('/api/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -40,5 +43,7 @@ app.use((err, req, res, next) => {
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
+
+
 
 module.exports = app;

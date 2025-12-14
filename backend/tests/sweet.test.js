@@ -1,8 +1,11 @@
+require('./setup');
+
 const request = require('supertest');
 const app = require('../src/app');
 const Sweet = require('../src/models/Sweet');
 
-describe('RED 1: GET /api/sweets', () => {
+describe('RED 1: GET /api/Sweet', () => {
+
   beforeEach(async () => {
     await Sweet.create({
       name: 'Chocolate Cake',
@@ -16,11 +19,11 @@ describe('RED 1: GET /api/sweets', () => {
 
   it('should return list of sweets', async () => {
     const res = await request(app)
-      .get('/api/sweets')
+      .get('/api/Sweet')
       .expect(200);
 
     expect(res.body).toHaveProperty('sweets');
     expect(res.body.sweets.length).toBe(1);
-    expect(res.body.sweets[0]).toHaveProperty('name', 'Chocolate Cake');
+    expect(res.body.sweets[0].name).toBe('Chocolate Cake');
   });
 });
