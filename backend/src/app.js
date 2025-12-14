@@ -27,6 +27,21 @@ app.use('/api/orders', require('./routes/orders'));
 // Serve uploaded files
 app.use('/api/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Root route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    message: 'SweetShop API is running',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      auth: '/api/auth',
+      sweets: '/api/Sweet',
+      orders: '/api/orders'
+    }
+  });
+});
+
 // Health check route
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'SweetShop API is running' });
