@@ -84,17 +84,17 @@ router.post('/login', async (req, res) => {
     }
 
     // 🔥 THIS IS THE IMPORTANT FIX
-  const token = jwt.sign(
+ const token = jwt.sign(
   {
-    userId: user._id,
-    role: user.role     // ✅ REQUIRED FOR TEST
+    userId: user._id.toString(), // 🔥 REQUIRED
+    role: user.role              // 🔥 REQUIRED
   },
   process.env.JWT_SECRET,
   { expiresIn: '1d' }
 );
 
 
-   res.json({
+   res.status(200).json({
   message: 'Login successful',
   token,
   user: {
@@ -104,6 +104,7 @@ router.post('/login', async (req, res) => {
     role: user.role
   }
 });
+
 
   } catch (err) {
     console.error(err);
