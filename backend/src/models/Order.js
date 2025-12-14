@@ -57,7 +57,7 @@ const orderSchema = new mongoose.Schema({
 
 // Index for performance
 orderSchema.index({ user: 1, createdAt: -1 });
-orderSchema.index({ orderNumber: 1 });
+// orderNumber already has an index from unique: true constraint
 
 // Static method to generate order number
 orderSchema.statics.generateOrderNumber = async function() {

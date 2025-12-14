@@ -19,6 +19,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', require('./routes/auth'));
 // enable sweet routes
 app.use('/api/Sweet', require('./routes/Sweet'));
+// enable order routes
+app.use('/api/orders', require('./routes/orders'));
+
 
 
 // Serve uploaded files

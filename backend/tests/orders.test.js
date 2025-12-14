@@ -1,8 +1,12 @@
+require('./setup');
+
 const request = require('supertest');
 const app = require('../src/app');
 const Order = require('../src/models/Order');
 const Sweet = require('../src/models/Sweet');
 const User = require('../src/models/User');
+
+jest.setTimeout(30000);
 
 describe('Order System', () => {
   let customerToken, adminToken, customer, admin, sweet1, sweet2;
