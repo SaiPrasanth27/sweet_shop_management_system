@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import CartIcon from '../Cart/CartIcon';
-import CartSidebar from '../Cart/CartSideBar';
+import CartSidebar from '../Cart/CartSidebar';
 import './Header.css';
 
 const Header = () => {
@@ -25,6 +25,7 @@ const Header = () => {
 
           <nav className="nav">
             <Link to="/" className="nav-link">Home</Link>
+            <Link to="/test" className="nav-link">Test</Link>
             
             {isAuthenticated ? (
               <>

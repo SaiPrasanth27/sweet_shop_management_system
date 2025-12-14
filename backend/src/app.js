@@ -5,10 +5,12 @@ require('dotenv').config();
 
 const app = express();
 
-// CORS
+// CORS - Allow all origins for development
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Body parser middleware
@@ -21,6 +23,8 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/Sweet', require('./routes/Sweet'));
 // enable order routes
 app.use('/api/orders', require('./routes/orders'));
+// enable cart routes
+app.use('/api/cart', require('./routes/cart'));
 
 
 

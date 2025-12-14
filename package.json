@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd backend && npm run dev",
-    "client": "cd frontend && npm start",
+    "client": "cd frontend/frontend && npm start",
     "test": "cd backend && npm test",
     "test:watch": "cd backend && npm run test:watch",
-    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+    "install-all": "npm install && cd backend && npm install && cd frontend/frontend && npm install"
   },
   "keywords": ["sweet-shop", "management", "tdd", "react", "nodejs", "mongodb"],
   "author": "Sai Prasanth",

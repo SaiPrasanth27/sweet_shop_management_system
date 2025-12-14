@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>Sweet Shop API Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testAPI() {
+            const results = document.getElementById('results');
+            
+            try {
+                // Test backend health
+                const response = await fetch('http://localhost:5001/health');
+                const data = await response.json();
+                results.innerHTML += '<p>✅ Backend Health: ' + JSON.stringify(data) + '</p>';
+                
+                // Test register
+                const registerResponse = await fetch('http://localhost:5001/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: 'testuser',
+                        email: 'test@example.com',
+                        password: 'password123',
+                        role: 'customer'
+                    })
+                });
+                
+                if (registerResponse.ok) {
+                    const registerData = await registerResponse.json();
+                    results.innerHTML += '<p>✅ Register works: ' + registerData.message + '</p>';
+                } else {
+                    const error = await registerResponse.text();
+                    results.innerHTML += '<p>❌ Register failed: ' + error + '</p>';
+                }
+                
+            } catch (error) {
+                results.innerHTML += '<p>❌ Connection failed: ' + error.message + '</p>';
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>

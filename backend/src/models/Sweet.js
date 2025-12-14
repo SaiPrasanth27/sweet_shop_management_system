@@ -22,9 +22,9 @@ const sweetSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: ["cakes", "pastries", "candies", "chocolates", "cookies"]
+      enum: ["Chocolate", "Gummy", "Hard Candy", "Cookies", "Cakes", "Other"]
     },
-    stock: {
+    quantity: {
       type: Number,
       default: 0,
       min: 0

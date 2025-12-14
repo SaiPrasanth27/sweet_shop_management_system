@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
 // Create axios instance
 const api = axios.create({
@@ -30,29 +30,29 @@ api.interceptors.response.use(
 
 const sweetService = {
   async getAllSweets(params = {}) {
-    const response = await api.get('/sweets', { params });
+    const response = await api.get('/Sweet', { params });
     return response.data;
   },
 
   async getSweetById(id) {
-    const response = await api.get(`/sweets/${id}`);
+    const response = await api.get(`/Sweet/${id}`);
     return response.data;
   },
 
   async searchSweets(query, params = {}) {
-    const response = await api.get('/sweets/search', { 
+    const response = await api.get('/Sweet/search', { 
       params: { q: query, ...params } 
     });
     return response.data;
   },
 
   async createSweet(sweetData) {
-    const response = await api.post('/sweets', sweetData);
+    const response = await api.post('/Sweet', sweetData);
     return response.data;
   },
 
   async createSweetWithImage(formData) {
-    const response = await api.post('/sweets', formData, {
+    const response = await api.post('/Sweet', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -61,12 +61,12 @@ const sweetService = {
   },
 
   async updateSweet(id, sweetData) {
-    const response = await api.put(`/sweets/${id}`, sweetData);
+    const response = await api.put(`/Sweet/${id}`, sweetData);
     return response.data;
   },
 
   async updateSweetWithImage(id, formData) {
-    const response = await api.put(`/sweets/${id}`, formData, {
+    const response = await api.put(`/Sweet/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -75,22 +75,22 @@ const sweetService = {
   },
 
   async deleteSweet(id) {
-    const response = await api.delete(`/sweets/${id}`);
+    const response = await api.delete(`/Sweet/${id}`);
     return response.data;
   },
 
   async purchaseSweet(id, quantity, notes = '') {
-    const response = await api.post(`/sweets/${id}/purchase`, { quantity, notes });
+    const response = await api.post(`/Sweet/${id}/purchase`, { quantity, notes });
     return response.data;
   },
 
   async restockSweet(id, quantity) {
-    const response = await api.post(`/sweets/${id}/restock`, { quantity });
+    const response = await api.post(`/Sweet/${id}/restock`, { quantity });
     return response.data;
   },
 
   async getSweetsByCategory(category, params = {}) {
-    const response = await api.get(`/sweets/category/${category}`, { params });
+    const response = await api.get(`/Sweet/category/${category}`, { params });
     return response.data;
   }
 };

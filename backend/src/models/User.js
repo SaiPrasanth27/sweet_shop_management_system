@@ -27,7 +27,23 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['customer', 'admin'],
     default: 'customer'
-  }
+  },
+  cart: [{
+    sweet: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Sweet',
+      required: true
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1
+    },
+    price: {
+      type: Number,
+      required: true
+    }
+  }]
 }, { timestamps: true });
 
 // Pre-save hook to hash password before saving

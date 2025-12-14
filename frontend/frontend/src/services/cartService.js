@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
-// Create axios instance
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -25,7 +24,7 @@ const cartService = {
     return response.data;
   },
 
-  async addToCart(sweetId, quantity) {
+  async addToCart(sweetId, quantity = 1) {
     const response = await api.post('/cart/add', { sweetId, quantity });
     return response.data;
   },
@@ -42,11 +41,6 @@ const cartService = {
 
   async clearCart() {
     const response = await api.delete('/cart/clear');
-    return response.data;
-  },
-
-  async getCartCount() {
-    const response = await api.get('/cart/count');
     return response.data;
   }
 };

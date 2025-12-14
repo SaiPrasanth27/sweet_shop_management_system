@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import SweetCard from '../components/Sweet/SweetCard';
-import QuickEditModal from '../components/Sweet/QuickEditModal';
 import sweetService from '../services/sweetService';
 import { useAuth } from '../context/AuthContext';
 import '../components/Sweet/Sweet.css';
@@ -9,53 +9,17 @@ const Home = () => {
   const [sweets, setSweets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState({
-    category: ''
-  });
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 12,
-    total: 0,
-    totalPages: 0
-  });
-
-  const { isAuthenticated, isAdmin } = useAuth();
-  const [editingSweet, setEditingSweet] = useState(null);
-  const [showQuickEdit, setShowQuickEdit] = useState(false);
+  const { isAuthenticated, user } = useAuth();
 
   const loadSweets = async () => {
-    setLoading(true);
-    setError('');
-    
     try {
-      const params = {
-        page: pagination.page,
-        limit: pagination.limit,
-        ...filters
-      };
-
-      // Remove empty filters
-      Object.keys(params).forEach(key => {
-        if (params[key] === '') delete params[key];
-      });
-
-      let response;
-      if (searchQuery.trim()) {
-        response = await sweetService.searchSweets(searchQuery, params);
-      } else {
-        response = await sweetService.getAllSweets(params);
-      }
-
-      setSweets(response.sweets);
-      setPagination(prev => ({
-        ...prev,
-        total: response.total,
-        totalPages: response.totalPages
-      }));
+      setLoading(true);
+      setError('');
+      const response = await sweetService.getAllSweets({ limit: 8 });
+      setSweets(response.sweets || []);
     } catch (err) {
-      setError('Failed to load sweets. Please try again.');
       console.error('Error loading sweets:', err);
+      setError('Failed to load sweets. Please check your connection.');
     } finally {
       setLoading(false);
     }
@@ -63,208 +27,91 @@ const Home = () => {
 
   useEffect(() => {
     loadSweets();
-  }, [pagination.page, filters]);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setPagination(prev => ({ ...prev, page: 1 }));
-    loadSweets();
-  };
-
-  const handleFilterChange = (filterName, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterName]: value
-    }));
-    setPagination(prev => ({ ...prev, page: 1 }));
-  };
-
-  const handlePageChange = (newPage) => {
-    setPagination(prev => ({ ...prev, page: newPage }));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleEditSweet = (sweet) => {
-    setEditingSweet(sweet);
-    setShowQuickEdit(true);
-  };
-
-  const handleEditSuccess = (updatedSweet) => {
-    setSweets(sweets.map(sweet => 
-      sweet._id === updatedSweet._id ? updatedSweet : sweet
-    ));
-    setShowQuickEdit(false);
-    setEditingSweet(null);
-  };
-
-  const handleDeleteSweet = () => {
-    // Refresh the sweets list after deletion
-    loadSweets();
-  };
-
-  const handleRestockSweet = () => {
-    // Refresh the sweets list after restocking
-    loadSweets();
-  };
-
-  const categories = ['Chocolate', 'Gummy', 'Hard Candy', 'Cookies', 'Cakes', 'Other'];
+  }, []);
 
   return (
-    <div className="container">
-      <div className="page-header">
-        <h1>Premium Confectionery Collection</h1>
-        <p>Explore our curated selection of premium sweets and confectionery products</p>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="search-bar">
-        <form onSubmit={handleSearch} className="search-form">
-          <input
-            type="text"
-            placeholder="Search for sweets..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="form-input search-input"
-          />
-          <button type="submit" className="btn btn-primary">
-            Search
-          </button>
-        </form>
-
-        <div className="filters">
-          <div className="filter-group">
-            <label>Category</label>
-            <select
-              value={filters.category}
-              onChange={(e) => handleFilterChange('category', e.target.value)}
-              className="form-input"
-            >
-              <option value="">All Categories</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-
-
-
-
-
-          <button
-            onClick={() => {
-              setFilters({
-                category: ''
-              });
-              setSearchQuery('');
-            }}
-            className="btn btn-secondary"
-          >
-            Clear Filters
-          </button>
-        </div>
-      </div>
-
-      {/* Loading State */}
-      {loading && (
-        <div className="loading">
-          Loading delicious sweets...
-        </div>
-      )}
-
-      {/* Error State */}
-      {error && (
-        <div className="error-message">
-          {error}
-        </div>
-      )}
-
-      {/* Results */}
-      {!loading && !error && (
-        <>
-          <div className="results-info">
-            <p>
-              {searchQuery ? `Search results for "${searchQuery}": ` : ''}
-              {pagination.total} sweet{pagination.total !== 1 ? 's' : ''} found
-            </p>
-          </div>
-
-          {sweets.length === 0 ? (
-            <div className="no-results">
-              <h3>No sweets found</h3>
-              <p>Try adjusting your search or filters to find what you're looking for.</p>
+    <div className="home-container">
+      {/* Hero Section */}
+      <div className="hero-section">
+        <div className="container">
+          <h1>🍭 Sweet Shop Delights</h1>
+          <p>Discover our amazing collection of premium sweets and confectionery</p>
+          {!isAuthenticated && (
+            <div className="hero-actions">
+              <Link to="/register" className="btn btn-primary">Get Started</Link>
+              <Link to="/login" className="btn btn-outline">Login</Link>
             </div>
-          ) : (
-            <>
+          )}
+          {isAuthenticated && (
+            <div className="welcome-message">
+              <h3>Welcome back, {user?.username}! 👋</h3>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="container main-content">
+        {/* Loading State */}
+        {loading && (
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <p>Loading delicious sweets...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="error-state">
+            <h3>Oops! Something went wrong</h3>
+            <p>{error}</p>
+            <button onClick={loadSweets} className="btn btn-primary">
+              Try Again
+            </button>
+          </div>
+        )}
+
+        {/* Success State */}
+        {!loading && !error && (
+          <>
+            <div className="section-header">
+              <h2>Featured Sweets</h2>
+              <p>Handpicked favorites from our collection</p>
+            </div>
+
+            {sweets.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">🍬</div>
+                <h3>No sweets available yet</h3>
+                <p>Check back soon for delicious treats!</p>
+              </div>
+            ) : (
               <div className="sweets-grid">
                 {sweets.map(sweet => (
                   <SweetCard
                     key={sweet._id}
                     sweet={sweet}
                     onPurchase={loadSweets}
-                    onUpdate={isAdmin ? (sweet) => {
-                      if (sweet) {
-                        handleEditSweet(sweet);
-                      } else {
-                        handleRestockSweet();
-                      }
-                    } : undefined}
+                    onUpdate={loadSweets}
                   />
                 ))}
               </div>
+            )}
 
-              {/* Pagination */}
-              {pagination.totalPages > 1 && (
-                <div className="pagination">
-                  <button
-                    onClick={() => handlePageChange(pagination.page - 1)}
-                    disabled={pagination.page === 1}
-                    className="btn btn-secondary"
-                  >
-                    Previous
-                  </button>
-                  
-                  <span className="pagination-info">
-                    Page {pagination.page} of {pagination.totalPages}
-                  </span>
-                  
-                  <button
-                    onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page === pagination.totalPages}
-                    className="btn btn-secondary"
-                  >
-                    Next
-                  </button>
+            {/* Call to Action */}
+            {!isAuthenticated && (
+              <div className="cta-section">
+                <h3>Ready to start shopping?</h3>
+                <p>Join thousands of happy customers enjoying our premium sweets</p>
+                <div className="cta-actions">
+                  <Link to="/register" className="btn btn-primary">Create Account</Link>
+                  <Link to="/login" className="btn btn-secondary">Login</Link>
                 </div>
-              )}
-            </>
-          )}
-        </>
-      )}
-
-      {/* Quick Edit Modal for Admins */}
-      {isAdmin && (
-        <QuickEditModal
-          sweet={editingSweet}
-          isOpen={showQuickEdit}
-          onClose={() => {
-            setShowQuickEdit(false);
-            setEditingSweet(null);
-          }}
-          onSuccess={handleEditSuccess}
-        />
-      )}
-
-      {/* Login Prompt for Guests */}
-      {!isAuthenticated && (
-        <div className="guest-prompt">
-          <h3>Want to purchase sweets?</h3>
-          <p>Create an account or login to start buying your favorite treats!</p>
-          <div className="guest-actions">
-            <a href="/register" className="btn btn-primary">Sign Up</a>
-            <a href="/login" className="btn btn-secondary">Login</a>
-          </div>
-        </div>
-      )}
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

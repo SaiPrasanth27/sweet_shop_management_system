@@ -29,13 +29,13 @@ const validateSweetCreation = [
     .withMessage('Price must be a positive number'),
 
   body('category')
-    .isIn(['cakes', 'pastries', 'candies', 'chocolates', 'cookies'])
+    .isIn(['Chocolate', 'Gummy', 'Hard Candy', 'Cookies', 'Cakes', 'Other'])
     .withMessage('Invalid category'),
 
-  body('stock')
+  body('quantity')
     .optional()
     .isInt({ min: 0 })
-    .withMessage('Stock must be a non-negative integer'),
+    .withMessage('Quantity must be a non-negative integer'),
 
   handleValidationErrors
 ];
@@ -47,8 +47,8 @@ const validateSweetUpdate = [
   body('price').optional().isFloat({ min: 0 }),
   body('category')
     .optional()
-    .isIn(['cakes', 'pastries', 'candies', 'chocolates', 'cookies']),
-  body('stock').optional().isInt({ min: 0 }),
+    .isIn(['Chocolate', 'Gummy', 'Hard Candy', 'Cookies', 'Cakes', 'Other']),
+  body('quantity').optional().isInt({ min: 0 }),
 
   handleValidationErrors
 ];
@@ -57,7 +57,7 @@ const validateSweetUpdate = [
 const validateSweetQuery = [
   query('category')
     .optional()
-    .isIn(['cakes', 'pastries', 'candies', 'chocolates', 'cookies']),
+    .isIn(['Chocolate', 'Gummy', 'Hard Candy', 'Cookies', 'Cakes', 'Other']),
 
   query('search')
     .optional()
