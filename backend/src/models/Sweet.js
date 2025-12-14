@@ -31,7 +31,6 @@ const sweetSchema = new mongoose.Schema(
     },
     imageFilename: {
       type: String,
-      required: true
     }
   },
   {

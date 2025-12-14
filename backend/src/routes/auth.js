@@ -72,39 +72,47 @@ router.post('/register', validateRegistration, async (req, res) => {
 });
 
 // route for user login.(generates JWT token on successful login)
-router.post('/login', validateLogin, async (req, res) => {
+
+
+router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findByEmail(email);
-    if (!user) {
+    const user = await User.findOne({ email });
+    if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const isPasswordValid = await user.comparePassword(password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
+    // 🔥 THIS IS THE IMPORTANT FIX
+  const token = jwt.sign(
+  {
+    userId: user._id,
+    role: user.role     // ✅ REQUIRED FOR TEST
+  },
+  process.env.JWT_SECRET,
+  { expiresIn: '1d' }
+);
 
-    const token = generateToken(user._id, user.role);
 
-    res.status(200).json({
-      message: 'Login successful',
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role
-      },
-      token
-    });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ 
-      error: 'Internal server error during login' 
-    });
+   res.json({
+  message: 'Login successful',
+  token,
+  user: {
+    id: user._id,
+    username: user.username,
+    email: user.email,
+    role: user.role
   }
 });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+
+
 
 //route for getting current logged in user details.
 router.get('/me', require('../middlewares/auth').authenticateToken, (req, res) => {
