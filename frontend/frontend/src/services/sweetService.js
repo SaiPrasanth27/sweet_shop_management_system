@@ -55,12 +55,8 @@ const sweetService = {
     return response.data;
   },
 
-  async createSweetWithImage(formData) {
-    const response = await api.post('/Sweet', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  async createSweetWithImage(sweetData) {
+    const response = await api.post('/Sweet', sweetData);
     return response.data;
   },
 
@@ -69,12 +65,8 @@ const sweetService = {
     return response.data;
   },
 
-  async updateSweetWithImage(id, formData) {
-    const response = await api.put(`/Sweet/${id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  async updateSweetWithImage(id, sweetData) {
+    const response = await api.put(`/Sweet/${id}`, sweetData);
     return response.data;
   },
 

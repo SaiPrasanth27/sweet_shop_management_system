@@ -8,9 +8,9 @@ const SweetForm = ({ sweet, onSuccess, onCancel }) => {
     category: 'Chocolate',
     price: '',
     quantity: '',
-    description: ''
+    description: '',
+    imageUrl: ''
   });
-  const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -24,7 +24,8 @@ const SweetForm = ({ sweet, onSuccess, onCancel }) => {
         category: sweet.category || 'Chocolate',
         price: sweet.price?.toString() || '',
         quantity: sweet.quantity?.toString() || '',
-        description: sweet.description || ''
+        description: sweet.description || '',
+        imageUrl: sweet.imageUrl || ''
       });
       
       // Set image preview if sweet has an image
@@ -50,54 +51,56 @@ const SweetForm = ({ sweet, onSuccess, onCancel }) => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        setErrors(prev => ({
-          ...prev,
-          image: 'Please select a valid image file (JPEG, JPG, PNG, GIF, WebP)'
-        }));
-        return;
-      }
-
-      // Validate file size (5MB limit)
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors(prev => ({
-          ...prev,
-          image: 'Image file size must be less than 5MB'
-        }));
-        return;
-      }
-
-      setSelectedImage(file);
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
-
+  const handleImageUrlChange = (e) => {
+    const url = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      imageUrl: url
+    }));
+    
+    // Update preview if URL is valid
+    if (url && isValidImageUrl(url)) {
+      setImagePreview(url);
       // Clear any previous image errors
-      if (errors.image) {
+      if (errors.imageUrl) {
         setErrors(prev => ({
           ...prev,
-          image: ''
+          imageUrl: ''
+        }));
+      }
+    } else if (url) {
+      setImagePreview(null);
+      setErrors(prev => ({
+        ...prev,
+        imageUrl: 'Please enter a valid image URL (jpg, jpeg, png, gif, webp)'
+      }));
+    } else {
+      setImagePreview(null);
+      if (errors.imageUrl) {
+        setErrors(prev => ({
+          ...prev,
+          imageUrl: ''
         }));
       }
     }
   };
 
+  const isValidImageUrl = (url) => {
+    return /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+  };
+
   const removeImage = () => {
-    setSelectedImage(null);
+    setFormData(prev => ({
+      ...prev,
+      imageUrl: ''
+    }));
     setImagePreview(null);
-    // Reset file input
-    const fileInput = document.getElementById('image');
-    if (fileInput) {
-      fileInput.value = '';
+    // Clear any image errors
+    if (errors.imageUrl) {
+      setErrors(prev => ({
+        ...prev,
+        imageUrl: ''
+      }));
     }
   };
 
@@ -154,26 +157,23 @@ const SweetForm = ({ sweet, onSuccess, onCancel }) => {
     setErrors({}); // Clear any previous errors
 
     try {
-      // Create FormData for file upload
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name.trim());
-      formDataToSend.append('category', formData.category);
-      formDataToSend.append('price', parseFloat(formData.price));
-      formDataToSend.append('quantity', parseInt(formData.quantity));
-      if (formData.description) {
-        formDataToSend.append('description', formData.description.trim());
-      }
-      if (selectedImage) {
-        formDataToSend.append('image', selectedImage);
-      }
+      // Create data object for JSON submission
+      const dataToSend = {
+        name: formData.name.trim(),
+        category: formData.category,
+        price: parseFloat(formData.price),
+        quantity: parseInt(formData.quantity),
+        description: formData.description.trim(),
+        imageUrl: formData.imageUrl.trim()
+      };
 
       let response;
       if (sweet) {
         // Update existing sweet
-        response = await sweetService.updateSweetWithImage(sweet._id, formDataToSend);
+        response = await sweetService.updateSweetWithImage(sweet._id, dataToSend);
       } else {
         // Create new sweet
-        response = await sweetService.createSweetWithImage(formDataToSend);
+        response = await sweetService.createSweetWithImage(dataToSend);
       }
 
       if (onSuccess) {
@@ -187,15 +187,10 @@ const SweetForm = ({ sweet, onSuccess, onCancel }) => {
           category: 'Chocolate',
           price: '',
           quantity: '',
-          description: ''
+          description: '',
+          imageUrl: ''
         });
-        setSelectedImage(null);
         setImagePreview(null);
-        // Reset file input
-        const fileInput = document.getElementById('image');
-        if (fileInput) {
-          fileInput.value = '';
-        }
       }
 
       alert(sweet ? 'Sweet updated successfully!' : 'Sweet created successfully!');
@@ -348,20 +343,21 @@ const SweetForm = ({ sweet, onSuccess, onCancel }) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="image" className="form-label">Sweet Image (Optional)</label>
+          <label htmlFor="imageUrl" className="form-label">Sweet Image URL (Optional)</label>
           <input
-            type="file"
-            id="image"
-            name="image"
-            accept="image/*"
-            onChange={handleImageChange}
+            type="url"
+            id="imageUrl"
+            name="imageUrl"
+            value={formData.imageUrl}
+            onChange={handleImageUrlChange}
             className="form-input"
+            placeholder="https://example.com/image.jpg"
             disabled={isLoading}
           />
           <small className="form-help">
-            Supported formats: JPEG, JPG, PNG, GIF, WebP (Max size: 5MB)
+            Enter a direct link to an image (jpg, jpeg, png, gif, webp)
           </small>
-          {errors.image && <div className="error">{errors.image}</div>}
+          {errors.imageUrl && <div className="error">{errors.imageUrl}</div>}
           
           {imagePreview && (
             <div className="image-preview">

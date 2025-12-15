@@ -29,8 +29,15 @@ const sweetSchema = new mongoose.Schema(
       default: 0,
       min: 0
     },
-    imageFilename: {
+    imageUrl: {
       type: String,
+      validate: {
+        validator: function(v) {
+          if (!v) return true; // Allow empty URLs
+          return /^https?:\/\/.+/i.test(v);
+        },
+        message: 'Please provide a valid image URL starting with http:// or https://'
+      }
     }
   },
   {
@@ -44,10 +51,7 @@ const sweetSchema = new mongoose.Schema(
 sweetSchema.index({ category: 1 });
 sweetSchema.index({ name: "text", description: "text" });
 
-// Virtual field
-sweetSchema.virtual("imageUrl").get(function () {
-  return `/api/uploads/${this.imageFilename}`;
-});
+// Remove virtual field since we're now storing imageUrl directly
 
 // Instance method
 sweetSchema.methods.getFormattedPrice = function () {

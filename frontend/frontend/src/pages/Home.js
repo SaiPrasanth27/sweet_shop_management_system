@@ -49,8 +49,8 @@ const Home = () => {
       {/* Hero Section */}
       <div className="hero-section">
         <div className="container">
-          <h1>Sweet Shop Delights</h1>
-          <p>Discover our amazing collection of premium sweets and confectionery</p>
+          <h1>Babai Bakery</h1>
+          <p>Discover our amazing collection of premium sweets and bakery items</p>
           {!isAuthenticated && (
             <div className="hero-actions">
               <Link to="/register" className="btn btn-primary">Get Started</Link>

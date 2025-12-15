@@ -69,7 +69,6 @@ router.post(
   '/',
   authenticateToken,   // ✅ MUST COME FIRST
   requireAdmin,        // ✅ MUST COME SECOND
-  uploadSingle,
   validateSweetCreation,
   async (req, res) => {
     try {
@@ -81,9 +80,9 @@ router.post(
         quantity: parseInt(req.body.quantity) || 0
       };
 
-      // Add image if uploaded
-      if (req.file) {
-        sweetData.imageFilename = req.file.filename;
+      // Add image URL if provided
+      if (req.body.imageUrl) {
+        sweetData.imageUrl = req.body.imageUrl;
       }
 
       const sweet = await Sweet.create(sweetData);
@@ -105,7 +104,6 @@ router.put(
   '/:id',
   authenticateToken,
   requireAdmin,
-  uploadSingle,
   validateSweetUpdate,
   async (req, res) => {
     try {
@@ -117,9 +115,9 @@ router.put(
       if (req.body.category) updateData.category = req.body.category;
       if (req.body.quantity) updateData.quantity = parseInt(req.body.quantity);
 
-      // Add image if uploaded
-      if (req.file) {
-        updateData.imageFilename = req.file.filename;
+      // Add image URL if provided
+      if (req.body.imageUrl) {
+        updateData.imageUrl = req.body.imageUrl;
       }
 
       const sweet = await Sweet.findByIdAndUpdate(

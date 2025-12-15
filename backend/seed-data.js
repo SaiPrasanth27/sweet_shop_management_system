@@ -9,42 +9,48 @@ const sampleSweets = [
     description: 'Rich and creamy dark chocolate truffle with cocoa powder coating',
     price: 25.99,
     category: 'Chocolate',
-    quantity: 50
+    quantity: 50,
+    imageUrl: 'https://images.unsplash.com/photo-1511381939415-e44015466834?w=400&h=400&fit=crop'
   },
   {
     name: 'Strawberry Gummy Bears',
     description: 'Soft and chewy gummy bears with natural strawberry flavor',
     price: 12.50,
     category: 'Gummy',
-    quantity: 100
+    quantity: 100,
+    imageUrl: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=400&h=400&fit=crop'
   },
   {
     name: 'Chocolate Chip Cookies',
     description: 'Freshly baked cookies with premium chocolate chips',
     price: 18.75,
     category: 'Cookies',
-    quantity: 75
+    quantity: 75,
+    imageUrl: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&h=400&fit=crop'
   },
   {
     name: 'Red Velvet Cake Slice',
     description: 'Moist red velvet cake with cream cheese frosting',
     price: 45.00,
     category: 'Cakes',
-    quantity: 20
+    quantity: 20,
+    imageUrl: 'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=400&h=400&fit=crop'
   },
   {
     name: 'Peppermint Hard Candy',
     description: 'Classic peppermint hard candy with refreshing taste',
     price: 8.99,
     category: 'Hard Candy',
-    quantity: 200
+    quantity: 200,
+    imageUrl: 'https://images.unsplash.com/photo-1514517220017-8ce97a34a7b6?w=400&h=400&fit=crop'
   },
   {
     name: 'Mixed Fruit Jellies',
     description: 'Assorted fruit-flavored jelly candies',
     price: 15.25,
     category: 'Other',
-    quantity: 80
+    quantity: 80,
+    imageUrl: 'https://images.unsplash.com/photo-1575908539629-0d5d7d3c8e2e?w=400&h=400&fit=crop'
   }
 ];
 
