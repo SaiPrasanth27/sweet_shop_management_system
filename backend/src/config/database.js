@@ -5,44 +5,58 @@ const mongoose = require('mongoose');
 // to force the in-memory server.
 const connectDB = async () => {
   try {
+    // Log environment info for debugging
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('MONGODB_URI set:', !!process.env.MONGODB_URI);
+    console.log('USE_IN_MEMORY_DB:', process.env.USE_IN_MEMORY_DB);
+
     let mongoUri = process.env.MONGODB_URI;
 
     // In production, MONGODB_URI must be set
-    if (process.env.NODE_ENV === 'production' && !mongoUri) {
-      throw new Error('MONGODB_URI environment variable is required in production');
+    if (process.env.NODE_ENV === 'production') {
+      if (!mongoUri) {
+        console.error('❌ MONGODB_URI environment variable is required in production');
+        console.error('Available environment variables:', Object.keys(process.env).filter(key => key.includes('MONGO')));
+        throw new Error('MONGODB_URI environment variable is required in production');
+      }
+      console.log('✅ Using production MongoDB URI');
     }
 
-    // For local development, fall back to in-memory or local MongoDB
-    if (!mongoUri || process.env.USE_IN_MEMORY_DB === 'true') {
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error('Cannot use in-memory database in production');
-      }
-      
-      // Try local MongoDB first
-      try {
-        mongoUri = 'mongodb://localhost:27017/sweetshop';
-        await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 2000 });
-        console.log('Connected to local MongoDB');
-        return;
-      } catch (error) {
-        console.log('Local MongoDB not available, using in-memory database');
-        // Lazy-load mongodb-memory-server only when needed
+    // For local development only
+    if (!mongoUri && process.env.NODE_ENV !== 'production') {
+      if (process.env.USE_IN_MEMORY_DB === 'true') {
+        console.log('Using in-memory database for development');
         const { MongoMemoryServer } = require('mongodb-memory-server');
         const mongod = await MongoMemoryServer.create();
         mongoUri = mongod.getUri();
-        console.log('Using in-memory MongoDB for local run');
+      } else {
+        // Try local MongoDB first
+        try {
+          mongoUri = 'mongodb://localhost:27017/sweetshop';
+          await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 2000 });
+          console.log('✅ Connected to local MongoDB');
+          return;
+        } catch (error) {
+          console.log('Local MongoDB not available, using in-memory database');
+          const { MongoMemoryServer } = require('mongodb-memory-server');
+          const mongod = await MongoMemoryServer.create();
+          mongoUri = mongod.getUri();
+        }
       }
     }
 
+    if (!mongoUri) {
+      throw new Error('No MongoDB URI available');
+    }
+
     const conn = await mongoose.connect(mongoUri, {
-      // mongoose v6+ ignores these options, but keep for backward compat
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
 
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error('Database connection error:', error.message);
+    console.error('❌ Database connection error:', error.message);
     process.exit(1);
   }
 };
