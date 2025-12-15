@@ -37,7 +37,7 @@ describe('Authentication Endpoints', () => {
         .send(userData)
         .expect(201);
 
-      expect(response.body).toHaveProperty('message', 'User registered successfully');
+      expect(response.body).toHaveProperty('message', 'Registration successful');
       expect(response.body).toHaveProperty('user');
       expect(response.body.user).toHaveProperty('id');
       expect(response.body.user.email).toBe(userData.email);

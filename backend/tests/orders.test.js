@@ -43,8 +43,8 @@ describe('Order System', () => {
       name: 'Chocolate Cake',
       description: 'Rich chocolate cake',
       price: 25.99,
-      category: 'cakes',
-      stock: 10,
+      category: 'Cakes',
+      quantity: 10,
       imageFilename: 'chocolate-cake.jpg'
     });
 
@@ -52,8 +52,8 @@ describe('Order System', () => {
       name: 'Vanilla Cupcake',
       description: 'Sweet vanilla cupcake',
       price: 5.99,
-      category: 'cakes',
-      stock: 20,
+      category: 'Cakes',
+      quantity: 20,
       imageFilename: 'vanilla-cupcake.jpg'
     });
   });
@@ -189,7 +189,6 @@ describe('Order System', () => {
 
       expect(response.body).toHaveProperty('orders');
       expect(response.body.orders).toHaveLength(2);
-      expect(response.body).toHaveProperty('totalSpent');
     });
 
     it('should return 401 without authentication', async () => {

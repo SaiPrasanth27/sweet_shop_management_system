@@ -15,15 +15,13 @@ const generateToken = (userId, role) => {
 };
 
 //route for user registration.(creates new user and generates JWT token).
-router.post('/register', validateRegistration, async (req, res) => {
+router.post('/register', async (req, res) => {
   try {
+    console.log('Register request:', req.body);
     const { username, email, password, role } = req.body;
 
-    const existingUser = await User.findByEmail(email);
-    if (existingUser) {
-      return res.status(400).json({ 
-        error: 'User with this email already exists' 
-      });
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'All fields required' });
     }
 
     const user = new User({
@@ -34,40 +32,25 @@ router.post('/register', validateRegistration, async (req, res) => {
     });
 
     await user.save();
-
     const token = generateToken(user._id, user.role);
 
     res.status(201).json({
-      message: 'User registered successfully',
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt
-      },
+      message: 'Registration successful',
+      user: { id: user._id, username, email, role: user.role },
       token
     });
   } catch (error) {
     console.error('Registration error:', error);
     
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({ 
-        error: 'Validation failed',
-        details: errors
-      });
-    }
-
     if (error.code === 11000) {
-      return res.status(400).json({ 
-        error: 'User with this email already exists' 
-      });
+      return res.status(400).json({ error: 'Email already exists' });
     }
-
-    res.status(500).json({ 
-      error: 'Internal server error during registration' 
-    });
+    
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ error: 'Invalid input data' });
+    }
+    
+    res.status(500).json({ error: 'Registration failed' });
   }
 });
 

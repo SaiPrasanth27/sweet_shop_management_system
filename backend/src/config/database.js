@@ -7,6 +7,19 @@ const connectDB = async () => {
   try {
     let mongoUri = process.env.MONGODB_URI;
 
+    // Try to connect to local MongoDB first, fallback to in-memory if needed
+    if (!mongoUri) {
+      try {
+        // Try connecting to local MongoDB
+        mongoUri = 'mongodb://localhost:27017/sweetshop';
+        await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 2000 });
+        console.log('Connected to local MongoDB');
+        return;
+      } catch (error) {
+        console.log('Local MongoDB not available, using in-memory database');
+      }
+    }
+
     if (!mongoUri || process.env.USE_IN_MEMORY_DB === 'true') {
       // Lazy-load mongodb-memory-server only when needed
       const { MongoMemoryServer } = require('mongodb-memory-server');

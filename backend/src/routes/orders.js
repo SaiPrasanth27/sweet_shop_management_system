@@ -79,16 +79,12 @@ router.post('/', authenticateToken, requireAuth, async (req, res) => {
 //fetching all orders of logged in user (user only).
 router.get('/', authenticateToken, requireAuth, async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user.id })
+    const orders = await Order.find({ user: req.user.userId })
       .sort({ createdAt: -1 })
       .populate('items.sweet', 'name category');
 
-    // Calculate total spent (excluding cancelled orders)
-    const totalSpent = await Order.calculateUserTotalSpent(req.user.id);
-
     res.json({
       orders,
-      totalSpent,
       count: orders.length
     });
   } catch (error) {

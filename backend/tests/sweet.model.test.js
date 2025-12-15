@@ -40,8 +40,8 @@ describe("Sweet Model", () => {
         name: "Chocolate Cake",
         description: "Delicious chocolate cake",
         price: 25.99,
-        category: "cakes",
-        stock: 10,
+        category: "Cakes",
+        quantity: 10,
         imageFilename: "chocolate-cake.jpg"
       };
 
@@ -53,23 +53,23 @@ describe("Sweet Model", () => {
       expect(savedSweet.description).toBe(sweetData.description);
       expect(savedSweet.price).toBe(sweetData.price);
       expect(savedSweet.category).toBe(sweetData.category);
-      expect(savedSweet.stock).toBe(sweetData.stock);
+      expect(savedSweet.quantity).toBe(sweetData.quantity);
       expect(savedSweet.imageFilename).toBe(sweetData.imageFilename);
       expect(savedSweet.createdAt).toBeDefined();
       expect(savedSweet.updatedAt).toBeDefined();
     });
 
-    it("should set default stock to 0", async () => {
+    it("should set default quantity to 0", async () => {
       const sweet = new Sweet({
         name: "Test Sweet",
         description: "Test description",
         price: 10.99,
-        category: "candies",
+        category: "Gummy",
         imageFilename: "test.jpg"
       });
 
       await sweet.save();
-      expect(sweet.stock).toBe(0);
+      expect(sweet.quantity).toBe(0);
     });
   });
 
@@ -80,7 +80,7 @@ describe("Sweet Model", () => {
       const sweet = new Sweet({
         description: "Test description",
         price: 10.99,
-        category: "candies",
+        category: "Gummy",
         imageFilename: "test.jpg"
       });
 
@@ -91,7 +91,7 @@ describe("Sweet Model", () => {
       const sweet = new Sweet({
         name: "Test Sweet",
         price: 10.99,
-        category: "candies",
+        category: "Gummy",
         imageFilename: "test.jpg"
       });
 
@@ -102,7 +102,7 @@ describe("Sweet Model", () => {
       const sweet = new Sweet({
         name: "Test Sweet",
         description: "Test description",
-        category: "candies",
+        category: "Gummy",
         imageFilename: "test.jpg"
       });
 
@@ -114,7 +114,7 @@ describe("Sweet Model", () => {
         name: "Test Sweet",
         description: "Test description",
         price: -5,
-        category: "candies",
+        category: "Gummy",
         imageFilename: "test.jpg"
       });
 
@@ -134,7 +134,7 @@ describe("Sweet Model", () => {
     });
 
     it("should accept valid categories", async () => {
-      const categories = ["cakes", "pastries", "candies", "chocolates", "cookies"];
+      const categories = ["Cakes", "Cookies", "Chocolate", "Gummy", "Other"];
 
       for (const category of categories) {
         const sweet = new Sweet({
@@ -150,13 +150,13 @@ describe("Sweet Model", () => {
       }
     });
 
-    it("should require non-negative stock", async () => {
+    it("should require non-negative quantity", async () => {
       const sweet = new Sweet({
         name: "Test Sweet",
         description: "Test description",
         price: 10.99,
-        category: "candies",
-        stock: -1,
+        category: "Gummy",
+        quantity: -1,
         imageFilename: "test.jpg"
       });
 
@@ -173,8 +173,8 @@ describe("Sweet Model", () => {
         name: "Test Sweet",
         description: "Test description",
         price: 25.99,
-        category: "cakes",
-        stock: 10,
+        category: "Cakes",
+        quantity: 10,
         imageFilename: "test.jpg"
       });
 

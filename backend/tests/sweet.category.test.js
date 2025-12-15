@@ -12,25 +12,25 @@ describe('RED 2: GET /api/sweets?category=', () => {
         name: 'Chocolate Cake',
         description: 'Cake',
         price: 20,
-        category: 'cakes',
-        stock: 5
+        category: 'Cakes',
+        quantity: 5
       },
       {
         name: 'Chocolate Bar',
         description: 'Chocolate',
         price: 5,
-        category: 'chocolates',
-        stock: 10
+        category: 'Chocolate',
+        quantity: 10
       }
     ]);
   });
 
   it('should return only sweets matching category', async () => {
     const res = await request(app)
-      .get('/api/Sweet?category=cakes')
+      .get('/api/Sweet?category=Cakes')
       .expect(200);
 
     expect(res.body.sweets.length).toBe(1);
-    expect(res.body.sweets[0].category).toBe('cakes');
+    expect(res.body.sweets[0].category).toBe('Cakes');
   });
 });
