@@ -45,24 +45,24 @@ describe('Sweet API Endpoints', () => {
           name: 'Chocolate Cake',
           description: 'Rich chocolate cake',
           price: 25.99,
-          category: 'Cakes',
-          quantity: 10,
+          category: 'cakes',
+          stock: 10,
           imageFilename: 'cake.jpg'
         },
         {
           name: 'Vanilla Cupcake',
           description: 'Sweet vanilla cupcake',
           price: 5.99,
-          category: 'Cakes',
-          quantity: 20,
+          category: 'cakes',
+          stock: 20,
           imageFilename: 'cupcake.jpg'
         },
         {
           name: 'Chocolate Bar',
           description: 'Dark chocolate bar',
           price: 3.99,
-          category: 'Chocolate',
-          quantity: 50,
+          category: 'chocolates',
+          stock: 50,
           imageFilename: 'bar.jpg'
         }
       ]);
@@ -76,7 +76,7 @@ describe('Sweet API Endpoints', () => {
 
     it('should filter sweets by category', async () => {
       const res = await request(app)
-        .get('/api/Sweet?category=Cakes')
+        .get('/api/Sweet?category=cakes')
         .expect(200);
       expect(res.body.sweets).toHaveLength(2);
     });
@@ -100,8 +100,8 @@ describe('Sweet API Endpoints', () => {
         .field('name', 'New Cake')
         .field('description', 'Delicious')
         .field('price', 10)
-        .field('category', 'Cakes')
-        .field('quantity', 5)
+        .field('category', 'cakes')
+        .field('stock', 5)
         .attach('image', img)
         .expect(201);
 
@@ -129,8 +129,8 @@ describe('Sweet API Endpoints', () => {
         name: 'Original',
         description: 'Desc',
         price: 10,
-        category: 'Cakes',
-        quantity: 5,
+        category: 'cakes',
+        stock: 5,
         imageFilename: 'x.jpg'
       });
     });
@@ -161,8 +161,8 @@ describe('Sweet API Endpoints', () => {
         name: 'Delete',
         description: 'Desc',
         price: 10,
-        category: 'Cakes',
-        quantity: 5,
+        category: 'cakes',
+        stock: 5,
         imageFilename: 'x.jpg'
       });
     });

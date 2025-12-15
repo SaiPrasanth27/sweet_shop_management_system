@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import SweetCard from '../components/Sweet/SweetCard';
 import sweetService from '../services/sweetService';
 import { useAuth } from '../context/AuthContext';
+import { testConnection } from '../utils/connectionTest';
 import '../components/Sweet/Sweet.css';
 
 const Home = () => {
@@ -15,11 +16,25 @@ const Home = () => {
     try {
       setLoading(true);
       setError('');
+      
+      // Test connection first
+      const connectionTest = await testConnection();
+      if (!connectionTest.success) {
+        setError(`Connection Error: ${connectionTest.error}`);
+        return;
+      }
+      
       const response = await sweetService.getAllSweets({ limit: 8 });
       setSweets(response.sweets || []);
     } catch (err) {
       console.error('Error loading sweets:', err);
-      setError('Failed to load sweets. Please check your connection.');
+      if (err.code === 'ECONNREFUSED') {
+        setError('Backend server is not running. Please start the backend server on port 5002.');
+      } else if (err.response?.status === 404) {
+        setError('API endpoint not found. Please check the backend routes.');
+      } else {
+        setError(`Failed to load sweets: ${err.response?.data?.error || err.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -34,7 +49,7 @@ const Home = () => {
       {/* Hero Section */}
       <div className="hero-section">
         <div className="container">
-          <h1>🍭 Sweet Shop Delights</h1>
+          <h1>Sweet Shop Delights</h1>
           <p>Discover our amazing collection of premium sweets and confectionery</p>
           {!isAuthenticated && (
             <div className="hero-actions">
@@ -81,7 +96,7 @@ const Home = () => {
 
             {sweets.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">🍬</div>
+                <div className="empty-icon">📦</div>
                 <h3>No sweets available yet</h3>
                 <p>Check back soon for delicious treats!</p>
               </div>

@@ -1,34 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useCart } from '../../context/CartContext';
 import sweetService from '../../services/sweetService';
 import './Sweet.css';
 
 const SweetCard = ({ sweet, onUpdate, onPurchase }) => {
   const { isAuthenticated, isAdmin } = useAuth();
-  const { addToCart, getCartItemQuantity } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [purchaseQuantity, setPurchaseQuantity] = useState(1);
   const [purchaseNotes, setPurchaseNotes] = useState('');
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-  const [addingToCart, setAddingToCart] = useState(false);
-
-  const handleAddToCart = async (quantity = 1) => {
-    if (!isAuthenticated) {
-      alert('Please login to add items to cart');
-      return;
-    }
-
-    setAddingToCart(true);
-    try {
-      await addToCart(sweet._id, quantity);
-      alert(`Added ${quantity} ${sweet.name}(s) to cart!`);
-    } catch (error) {
-      alert(error.response?.data?.error || 'Failed to add to cart');
-    } finally {
-      setAddingToCart(false);
-    }
-  };
 
   const handlePurchase = async () => {
     if (!isAuthenticated) {
@@ -44,8 +24,12 @@ const SweetCard = ({ sweet, onUpdate, onPurchase }) => {
       setPurchaseNotes('');
       if (onPurchase) onPurchase();
       
-      const orderInfo = response.order ? `\nOrder #${response.order.orderNumber} created` : '';
-      alert(`Successfully purchased ${purchaseQuantity} ${sweet.name}(s)!${orderInfo}`);
+      const orderInfo = response.order ? `Order #${response.order.orderNumber} has been placed successfully!` : 'Purchase completed successfully!';
+      
+      // Show success message with option to view orders
+      if (window.confirm(`${orderInfo}\n\nWould you like to view your orders?`)) {
+        window.location.href = '/orders';
+      }
     } catch (error) {
       alert(error.response?.data?.error || 'Purchase failed');
     } finally {
@@ -53,11 +37,7 @@ const SweetCard = ({ sweet, onUpdate, onPurchase }) => {
     }
   };
 
-  const handleEdit = () => {
-    if (onUpdate) {
-      onUpdate(sweet);
-    }
-  };
+
 
   const handleRestock = async () => {
     const quantity = prompt(`Restock "${sweet.name}"\nCurrent stock: ${sweet.quantity}\n\nEnter quantity to add:`);
@@ -65,18 +45,11 @@ const SweetCard = ({ sweet, onUpdate, onPurchase }) => {
       return;
     }
 
-    const addQuantity = parseInt(quantity);
-    const newTotal = sweet.quantity + addQuantity;
-    
-    if (!window.confirm(`Add ${addQuantity} units to "${sweet.name}"?\nNew total will be: ${newTotal}`)) {
-      return;
-    }
-
     setIsLoading(true);
     try {
-      const response = await sweetService.restockSweet(sweet._id, addQuantity);
-      if (onUpdate) onUpdate(); // Refresh the list to show updated quantity
-      alert(`Sweet restocked successfully!\nNew stock level: ${response.newQuantity || newTotal}`);
+      await sweetService.restockSweet(sweet._id, parseInt(quantity));
+      if (onUpdate) onUpdate(); // Refresh the list
+      alert(`Sweet restocked successfully!`);
     } catch (error) {
       alert(error.response?.data?.error || 'Failed to restock sweet');
     } finally {
@@ -85,18 +58,17 @@ const SweetCard = ({ sweet, onUpdate, onPurchase }) => {
   };
 
   const handleDelete = async () => {
-    const confirmMessage = `Are you sure you want to delete "${sweet.name}"?\n\nThis action cannot be undone and will remove the sweet from all customer carts.`;
-    if (!window.confirm(confirmMessage)) {
+    if (!window.confirm(`Delete "${sweet.name}"? This cannot be undone.`)) {
       return;
     }
 
     setIsLoading(true);
     try {
       await sweetService.deleteSweet(sweet._id);
-      if (onUpdate) onUpdate(); // This will refresh the list
+      if (onUpdate) onUpdate(); // Refresh the list
       alert('Sweet deleted successfully!');
     } catch (error) {
-      alert(error.response?.data?.error || 'Delete failed. It may be referenced in existing orders.');
+      alert(error.response?.data?.error || 'Delete failed');
     } finally {
       setIsLoading(false);
     }
@@ -133,43 +105,22 @@ const SweetCard = ({ sweet, onUpdate, onPurchase }) => {
           <div className="sweet-price">₹{sweet.price.toFixed(2)}</div>
           <div className={`sweet-stock ${getStockStatusClass()}`}>
             {sweet.quantity} in stock
-            {isAuthenticated && !isAdmin && getCartItemQuantity(sweet._id) > 0 && (
-              <span className="cart-quantity">
-                ({getCartItemQuantity(sweet._id)} in cart)
-              </span>
-            )}
           </div>
         </div>
         
         <div className="sweet-actions">
           {isAuthenticated && sweet.quantity > 0 && !isAdmin && (
-            <>
-              <button
-                onClick={() => handleAddToCart(1)}
-                className="btn btn-primary"
-                disabled={addingToCart || isLoading}
-              >
-                {addingToCart ? 'Adding...' : 'Add to Cart'}
-              </button>
-              <button
-                onClick={() => setShowPurchaseModal(true)}
-                className="btn btn-secondary"
-                disabled={isLoading}
-              >
-                Buy Now
-              </button>
-            </>
+            <button
+              onClick={() => setShowPurchaseModal(true)}
+              className="btn btn-primary"
+              disabled={isLoading}
+            >
+              Buy Now
+            </button>
           )}
           
           {isAdmin && (
             <div className="admin-actions">
-              <button
-                onClick={handleEdit}
-                className="btn btn-secondary"
-                disabled={isLoading}
-              >
-                Edit
-              </button>
               <button
                 onClick={handleRestock}
                 className="btn btn-success"

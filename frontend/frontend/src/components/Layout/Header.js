@@ -25,7 +25,6 @@ const Header = () => {
 
           <nav className="nav">
             <Link to="/" className="nav-link">Home</Link>
-            <Link to="/test" className="nav-link">Test</Link>
             
             {isAuthenticated ? (
               <>

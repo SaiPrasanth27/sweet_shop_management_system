@@ -6,7 +6,6 @@ import Register from './components/Auth/Register';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
 import AdminDashboard from './pages/AdminDashboard';
-import TestCustomer from './pages/TestCustomer';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Header from './components/Layout/Header';
@@ -25,7 +24,6 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/test" element={<TestCustomer />} />
           </Routes>
         </CartProvider>
       </AuthProvider>

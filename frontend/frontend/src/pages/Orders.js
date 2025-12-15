@@ -7,14 +7,12 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [cancellingOrders, setCancellingOrders] = useState(new Set());
 
-  const [stats, setStats] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchOrders();
-    fetchStats();
   }, []);
 
   const fetchOrders = async () => {
@@ -31,54 +29,7 @@ const Orders = () => {
     }
   };
 
-  const fetchStats = async () => {
-    try {
-      const response = await orderService.getOrderStats();
-      setStats(response.summary);
-    } catch (err) {
-      console.error('Error fetching stats:', err);
-    }
-  };
 
-  const handleCancelOrder = async (orderNumber) => {
-    if (!window.confirm('Are you sure you want to cancel this order?')) {
-      return;
-    }
-
-    try {
-      setCancellingOrders(prev => new Set([...prev, orderNumber]));
-      await orderService.cancelOrder(orderNumber, 'Cancelled by customer');
-      
-      // Update the order status and totalAmount locally
-      setOrders(prevOrders => 
-        prevOrders.map(order => 
-          order.orderNumber === orderNumber 
-            ? { ...order, status: 'cancelled', totalAmount: 0 }
-            : order
-        )
-      );
-      
-      // Refresh stats to reflect the updated totals
-      fetchStats();
-      
-      setError('');
-    } catch (error) {
-      console.error('Error cancelling order:', error);
-      setError(error.response?.data?.error || 'Failed to cancel order');
-    } finally {
-      setCancellingOrders(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(orderNumber);
-        return newSet;
-      });
-    }
-  };
-
-
-
-  const canCancelOrder = (order) => {
-    return !['received', 'cancelled', 'completed'].includes(order.status);
-  };
 
   const normalizeStatus = (status) => {
     const statusMap = {
@@ -125,22 +76,7 @@ const Orders = () => {
           </button>
         </div>
 
-        {stats && (
-          <div className="order-stats">
-            <div className="stat-card">
-              <h3>{stats.totalOrders}</h3>
-              <p>Total Orders</p>
-            </div>
-            <div className="stat-card">
-              <h3>₹{stats.totalSpent.toFixed(2)}</h3>
-              <p>Total Spent</p>
-            </div>
-            <div className="stat-card">
-              <h3>{stats.ordersByStatus?.received?.count || 0}</h3>
-              <p>Received Orders</p>
-            </div>
-          </div>
-        )}
+
 
 
 
@@ -192,20 +128,13 @@ const Orders = () => {
                 <div className="order-items">
                   {order.items.map((item, index) => (
                     <div key={index} className="order-item">
-                      <div className="order-item-image">
-                        {item.sweet?.imageUrl ? (
-                          <img src={item.sweet.imageUrl} alt={item.sweetName} />
-                        ) : (
-                          <div className="order-item-placeholder">No Image</div>
-                        )}
-                      </div>
                       <div className="order-item-details">
-                        <h5>{item.sweetName}</h5>
+                        <h5>{item.name}</h5>
                         <p>Quantity: {item.quantity}</p>
-                        <p>₹{item.unitPrice.toFixed(2)} each</p>
+                        <p>₹{item.price.toFixed(2)} each</p>
                       </div>
                       <div className="order-item-total">
-                        ₹{item.totalPrice.toFixed(2)}
+                        ₹{(item.price * item.quantity).toFixed(2)}
                       </div>
                     </div>
                   ))}
@@ -215,17 +144,7 @@ const Orders = () => {
                   <div className="order-total">
                     <strong>Total: ₹{order.totalAmount.toFixed(2)}</strong>
                   </div>
-                  <div className="order-actions">
-                    {canCancelOrder(order) && (
-                      <button
-                        className="btn btn-danger"
-                        onClick={() => handleCancelOrder(order.orderNumber)}
-                        disabled={cancellingOrders.has(order.orderNumber)}
-                      >
-                        {cancellingOrders.has(order.orderNumber) ? 'Cancelling...' : 'Cancel Order'}
-                      </button>
-                    )}
-                  </div>
+
                 </div>
 
                 {order.notes && (

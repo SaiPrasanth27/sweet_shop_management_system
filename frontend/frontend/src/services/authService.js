@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5004/api';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -23,10 +23,19 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+    const status = error.response?.status;
+    const reqUrl = error.config?.url || '';
+
+    // Don't force-redirect to login when the failure is from auth endpoints
+    // (e.g. invalid credentials on /auth/login or failures on /auth/register).
+    const isAuthEndpoint = reqUrl.includes('/auth/login') || reqUrl.includes('/auth/register') || reqUrl.includes('/auth/me');
+
+    if (status === 401 && !isAuthEndpoint) {
+      try { localStorage.removeItem('token'); } catch (e) {}
+      // navigate to login page but avoid full page reload in dev flow
+      try { window.location.href = '/login'; } catch (e) {}
     }
+
     return Promise.reject(error);
   }
 );

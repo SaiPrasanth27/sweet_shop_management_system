@@ -1,11 +1,11 @@
 .header {
-  background: var(--gradient-primary);
-  color: white;
-  box-shadow: var(--shadow-lg);
+  background: var(--surface);
+  color: var(--text-primary);
+  box-shadow: 0 2px 4px var(--shadow);
+  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(10px);
 }
 
 .header-content {
@@ -18,23 +18,20 @@
 
 .logo {
   text-decoration: none;
-  color: white;
-  transition: transform 0.2s ease;
+  color: var(--text-primary);
+  transition: opacity 0.2s ease;
 }
 
 .logo:hover {
-  transform: scale(1.05);
+  opacity: 0.8;
 }
 
 .logo h1 {
-  font-size: 2rem;
+  font-size: 1.8rem;
   margin: 0;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.5px;
-  background: linear-gradient(45deg, #fff, #ffe66d);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--primary-color);
 }
 
 .nav {
@@ -44,34 +41,17 @@
 }
 
 .nav-link {
-  color: white;
+  color: var(--text-primary);
   text-decoration: none;
   font-weight: 500;
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-md);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.nav-link::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  transition: left 0.3s ease;
-}
-
-.nav-link:hover::before {
-  left: 0;
+  transition: all 0.2s ease;
 }
 
 .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-1px);
+  background-color: var(--background);
+  color: var(--primary-color);
 }
 
 .user-menu {
