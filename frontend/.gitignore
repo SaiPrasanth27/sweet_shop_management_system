@@ -3,7 +3,6 @@ node_modules/
 */node_modules/
 
 # Production builds
-build/
 dist/
 
 # Environment variables
@@ -69,7 +68,6 @@ dist
 
 # Gatsby files
 .cache/
-public
 
 # Storybook build outputs
 .out
